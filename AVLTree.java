@@ -12,10 +12,10 @@ public class AVLTree {
 
   public void insertIter(int toInsert) {
       if(root == null) {
-        root = new node(toInsert, null, null);
+        root = new Node(toInsert, null, null);
         return;
       }
-      node curr = root;
+      Node curr = root;
       ArrayList<Node> ancestory = new ArrayList<Node>();
       //if the current node is not empty, broken go on
       //if the current node is equal to the new value break because assumed no duplicates
@@ -24,7 +24,7 @@ public class AVLTree {
         if(curr.getKey() > toInsert) {
           //if the value to insert is less than the current node and the left child is empty insert
           if(curr.getLeft() == null) {
-            curr.setLeft(new node(toInsert, null, null));
+            curr.setLeft(new Node(toInsert, null, null));
             break;
           }
           //else get the left node to compare
@@ -33,13 +33,14 @@ public class AVLTree {
         else {
           //if the value to insert is greater than the current node and the right child is empty insert
           if(curr.getRight() == null) {
-            curr.setRight(new node(toInsert, null, null));
+            curr.setRight(new Node(toInsert, null, null));
             break;
           }
           //else get the right child to compare
           curr = curr.getRight();
         }
       }
+    setHeightsIter(ancestory);
     for(int i = ancestory.size()-1; i >= 0; i--) {
       if(Math.abs(getBF(ancestory.get(i))) >= 2){
         balanceIter(ancestory);
@@ -55,7 +56,7 @@ public class AVLTree {
     if(root.getKey() == toRemove) {
       root = null;
     }
-    node curr = root;
+    Node curr = root;
     ArrayList<Node> ancestory = new ArrayList<Node>();
     while(curr.getLeft().getKey() != toRemove && curr.getRight().getKey() != toRemove) {
       if(curr.getKey() > toRemove) {
@@ -65,8 +66,9 @@ public class AVLTree {
         curr = curr.getRight();
       }
     }
-    node temp;
-    node remove;
+    ancestory.add(curr);
+    Node temp;
+    Node remove;
     int toReplace;
     //could probably make this a private method to remove clutter, but java makes copies of the obj so it might make a mess 
     if(curr.getLeft().getKey() == toRemove){
@@ -117,7 +119,30 @@ public class AVLTree {
                 curr.getRight().setKey(toReplace);
             }
     }
+    setHeightsIter(ancestory);
+    for(int i = ancestory.size()-1; i >= 0; i--) {
+      if(Math.abs(getBF(ancestory.get(i))) >= 2){
+        balanceIter(ancestory);
+        break;
+      }
+    }
   }
+
+  public Node getMaxIter(Node curr){
+    while(curr.getRight() != null){
+      curr = curr.getRight();
+    }
+    return curr;
+  }
+
+  public Node getMinIter(Node curr) {
+    while(curr.getLeft() != null) {
+      curr = curr.getLeft();
+    }
+    return curr;
+  }
+
+
   private void balanceIter(ArrayList<Node> l) {
     if(l.size() == 0){return;}
     Node curr = null;
@@ -245,5 +270,22 @@ public class AVLTree {
       right = 0;
     }
     return left - right;
+  }
+
+  public int[] getRandomArray(int n) {
+    Random r = new Random();
+    int[] arr = new int[n];
+    for(int i = 0; i < n; i++ )  {
+      arr[i] = r.nextInt();
+      //System.out.println(arr[i]);
+      //will scan the filled array
+      for(int j = n-1; j > i; j-- ) {
+        //if found decrement i and make it overwrite the value it just generated with a new value
+          if(arr[i] == arr[j]) {
+            i--;
+          }
+        }
+      }
+    return arr;
   }
 }
