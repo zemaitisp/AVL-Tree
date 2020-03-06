@@ -1,6 +1,8 @@
 import java.util.*;
 public class AVLTree {
   private Node root;
+  int count = 0;
+  int subcount = 0;
 
   public AVLTree() {
     this.root = null;
@@ -21,6 +23,8 @@ public class AVLTree {
       //if the current node is equal to the new value break because assumed no duplicates
       while(curr != null && curr.getKey() != toInsert) {
         ancestory.add(curr);
+        count++;
+        subcount++;
         if(curr.getKey() > toInsert) {
           //if the value to insert is less than the current node and the left child is empty insert
           if(curr.getLeft() == null) {
@@ -42,11 +46,15 @@ public class AVLTree {
       }
     setHeightsIter(ancestory);
     for(int i = ancestory.size()-1; i >= 0; i--) {
+      count++;
       if(Math.abs(getBF(ancestory.get(i))) >= 2){
         balanceIter(ancestory);
+        
         break;
       }
     }
+    System.out.println("AVL: " + count);
+    System.out.println("BST: " + subcount);
     }
 
     public void removeIter(int toRemove) {
@@ -224,10 +232,15 @@ public class AVLTree {
   private void rotLeft(Node n) {
     Node i = n;
     Node j = i.getRight();
-    Node k = j.getLeft();
+    
+    if(j.getLeft() != null) {
+      Node k = j.getLeft();
+      i.setRight(k);
+      
+    }
     //swap the two connections
     j.setLeft(i);
-    i.setRight(k);
+    
     //reset the heights
     j.setHeight(j.getHeight() + 1);
     i.setHeight(i.getHeight() - 1);
@@ -241,10 +254,13 @@ public class AVLTree {
   private void rotRight(Node n) {
     Node i = n;
     Node j = i.getLeft();
-    Node k = j.getRight();
+    if(j.getRight() != null) {
+      Node k = j.getRight();
+       i.setLeft(k);
+    }
     //swap the two connections
     j.setRight(i);
-    i.setLeft(k);
+   
     //set the heights correctly
     j.setHeight(j.getHeight() + 1);
     i.setHeight(i.getHeight() - 1);
